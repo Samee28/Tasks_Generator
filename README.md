@@ -2,6 +2,10 @@
 
 A modern web app that generates user stories and engineering tasks from feature ideas using AI.
 
+## 🚀 Quick Start
+
+**Get running in 2 minutes:** See [QUICK_START.md](./QUICK_START.md)
+
 ## Features
 
 ✨ **Core Features**
@@ -17,6 +21,13 @@ A modern web app that generates user stories and engineering tasks from feature 
 - Group tasks by type (User Stories vs Engineering Tasks)
 - Responsive design for mobile and desktop
 - Local persistent storage
+
+## 📚 Documentation
+
+- **[QUICK_START.md](./QUICK_START.md)** - Get running in 2 minutes
+- **[SETUP.md](./SETUP.md)** - Detailed setup and usage guide
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Production deployment guide
+- **[IMPLEMENTATION.md](./IMPLEMENTATION.md)** - Architecture & technical details
 
 ## Project Structure
 
