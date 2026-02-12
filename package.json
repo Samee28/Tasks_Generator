@@ -1,21 +1,28 @@
 {
-  "name": "tasks-generator",
-  "version": "1.0.0",
-  "description": "AI-powered task generation tool from feature ideas",
+  "name": "backend",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\"",
-    "build": "cd backend && npm install && npx next build",
-    "build:all": "npm run build -w backend && npm run build -w frontend",
-    "start": "cd backend && npx next start",
-    "start:backend": "cd backend && npm start",
-    "lint": "npm run lint -w backend && npm run lint -w frontend"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
   },
-  "workspaces": [
-    "backend",
-    "frontend"
-  ],
+  "dependencies": {
+    "axios": "^1.13.5",
+    "dotenv": "^17.2.4",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
