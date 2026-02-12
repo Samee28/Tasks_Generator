@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
-const path = require('path');
-
 const nextConfig = {
   /* config options here */
-  turbopack: {
-    root: path.resolve(process.cwd()),
+  experimental: {
+    turbo: false, // Disable turbopack for production
   },
 };
 
