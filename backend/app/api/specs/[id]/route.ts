@@ -3,11 +3,12 @@ import { loadSpecs } from '@/lib/specs';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const specs = loadSpecs();
-    const spec = specs.find(s => s.id === params.id);
+    const spec = specs.find(s => s.id === id);
 
     if (!spec) {
       return NextResponse.json(
