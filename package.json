@@ -1,0 +1,19 @@
+{
+  "name": "tasks-generator",
+  "version": "1.0.0",
+  "description": "AI-powered task generation tool from feature ideas",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "start": "npm start -w backend",
+    "lint": "npm run lint -w backend && npm run lint -w frontend"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
