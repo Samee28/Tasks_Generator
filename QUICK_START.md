@@ -1,73 +1,78 @@
-# 🚀 Quick Start (2 Minutes)
+# Quick Start Guide
 
-## Get Running Immediately
+Get Tasks Generator running in under 5 minutes!
 
-### Step 1️⃣: Clone
+## Prerequisites
+
+- Node.js 18+ installed
+- Groq API key ([Get free at console.groq.com](https://console.groq.com))
+
+## Step 1: Get the Code
+
 ```bash
-git clone https://github.com/Samee28/Tasks_Generator.git
-cd tasks-generator
+git clone <your-repo-url>
+cd "Tasks Generator"
+npm install
 ```
 
-### Step 2️⃣: Get API Key
-1. Go to: https://console.anthropic.com
-2. Sign up for free
-3. Copy your API key
+## Step 2: Configure Backend
 
-### Step 3️⃣: Setup Backend
 ```bash
 cd backend
 cp .env.example .env.local
-# Edit .env.local and paste your API key
-nano .env.local
-npm install
 ```
 
-### Step 4️⃣: Setup Frontend
+Edit `backend/.env.local`:
+```bash
+GROQ_API_KEY=your_actual_groq_api_key_here
+```
+
+## Step 3: Configure Frontend
+
 ```bash
 cd ../frontend
-npm install
+cp .env.example .env.local
 ```
 
-### Step 5️⃣: Run
-**Open Terminal 1:**
+For local development, leave `VITE_API_URL` empty in `frontend/.env.local`:
+```bash
+VITE_API_URL=
+```
+
+## Step 4: Start Servers
+
+**Terminal 1 - Backend:**
 ```bash
 cd backend
 npm run dev
 ```
 
-**Open Terminal 2:**
+**Terminal 2 - Frontend:**
 ```bash
 cd frontend
 npm run dev
 ```
 
-### Step 6️⃣: Use
+## Step 5: Open App
+
 Visit: **http://localhost:5173**
 
----
+## Usage
 
-## 💡 Example Usage
+1. Enter your project goal (e.g., "Build a todo app")
+2. Specify users (e.g., "Students")
+3. Add constraints (e.g., "Simple UI")
+4. Click "Generate Tasks"
+5. View, edit, and export your AI-generated tasks!
 
-1. Fill the form:
-   - **Goal**: "Build an AI chatbot"
-   - **Users**: "Business teams"
-   - **Constraints**: "Real-time, accurate, secure"
+## Need Help?
 
-2. Click "Generate Tasks" (Wait 5 seconds)
+- **Backend not starting?** Check your Groq API key in `backend/.env.local`
+- **Frontend can't connect?** Make sure backend is running on port 3000
+- **API errors?** Verify your Groq API key is valid at [console.groq.com](https://console.groq.com)
 
-3. You'll get user stories and engineering tasks
+## Next Steps
 
-4. Edit, reorder, or export!
-
----
-
-## 📚 Need Help?
-
-- **Setup issues?** → See [SETUP.md](./SETUP.md)
-- **Deploy to web?** → See [DEPLOYMENT.md](./DEPLOYMENT.md)
-- **How it works?** → See [README.md](./README.md)
-- **Full details?** → See [IMPLEMENTATION.md](./IMPLEMENTATION.md)
-
----
-
-**That's it! You're ready to generate tasks with AI!** ✨
+- Read [SETUP.md](SETUP.md) for detailed configuration
+- See [DEPLOYMENT.md](DEPLOYMENT.md) for production deployment
+- Check [README.md](README.md) for full documentation

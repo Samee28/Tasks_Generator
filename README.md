@@ -1,227 +1,291 @@
 # Tasks Generator
 
-A modern web app that generates user stories and engineering tasks from feature ideas using AI.
+> AI-powered task breakdown tool that transforms project ideas into actionable user stories and engineering tasks.
+
+## 🎯 Overview
+
+Tasks Generator is a full-stack web application that uses AI to automatically generate structured task breakdowns from simple project descriptions. Perfect for project planning, sprint preparation, and requirement analysis.
+
+**Live Demo:** [Coming Soon on Vercel]
+
+## ✨ Key Features
+
+- **AI-Powered Generation**: Uses Groq's Llama 3.3 70B model for intelligent task creation
+- **Smart Templates**: Pre-built templates for Web Apps, Mobile Apps, and Internal Tools
+- **Interactive Task Management**: 
+  - ✏️ Edit tasks inline
+  - 🗑️ Delete unwanted tasks
+  - 🔄 Drag-and-drop reordering
+  - 📦 Collapsible task groups
+- **Export Options**: Download as Markdown or plain text, copy to clipboard
+- **History Management**: Automatically saves your last 5 task generations
+- **Modern UI**: Clean, responsive interface with smooth animations
+
+## 🛠️ Technology Stack
+
+### Backend
+- **Next.js 16** (App Router with Turbopack)
+- **TypeScript 5** (Strict mode)
+- **Groq API** (llama-3.3-70b-versatile model)
+- **File-based Storage** (JSON persistence)
+
+### Frontend
+- **React 18** with Hooks
+- **Vite 7** for fast development
+- **HTML5 Drag and Drop API**
+- **Modern CSS3** with responsive design
 
 ## 🚀 Quick Start
 
-**Get running in 2 minutes:** See [QUICK_START.md](./QUICK_START.md)
-
-## Features
-
-✨ **Core Features**
-- Fill a form about a feature idea (goal, users, constraints)
-- Generate a list of user stories and engineering tasks using Claude AI
-- Edit, reorder, and delete tasks
-- Export results as markdown or text
-- View last 5 generated specifications
-
-🎨 **Enhancements**
-- Built-in templates (Web App, Mobile App, Internal Tool)
-- Drag-and-drop to reorder tasks
-- Group tasks by type (User Stories vs Engineering Tasks)
-- Responsive design for mobile and desktop
-- Local persistent storage
-
-## 📚 Documentation
-
-- **[QUICK_START.md](./QUICK_START.md)** - Get running in 2 minutes
-- **[SETUP.md](./SETUP.md)** - Detailed setup and usage guide
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Production deployment guide
-- **[IMPLEMENTATION.md](./IMPLEMENTATION.md)** - Architecture & technical details
-
-## Project Structure
-
-```
-tasks-generator/
-├── frontend/              # React + Vite frontend app
-│   ├── src/
-│   │   ├── components/    # React components
-│   │   ├── App.jsx        # Main app component
-│   │   └── App.css        # Styling
-│   ├── package.json
-│   └── vite.config.js
-│
-└── backend/               # Next.js API backend
-    ├── src/
-    │   ├── app/
-    │   │   ├── api/
-    │   │   │   ├── generate-tasks/   # POST endpoint for generating tasks
-    │   │   │   └── specs/            # GET endpoints for specs
-    │   │   └── ...
-    │   └── lib/
-    │       └── specs.ts   # Data persistence layer
-    ├── package.json
-    ├── next.config.js
-    └── .env.example
-```
-
-## Tech Stack
-
-**Frontend:**
-- React 18
-- Vite (build tool)
-- Modern CSS3
-
-**Backend:**
-- Next.js 15 (TypeScript)
-- Claude API (AI task generation)
-- File-based persistence
-
-## Getting Started
-
 ### Prerequisites
-- Node.js 18+
-- npm or yarn
-- Claude API key from [Anthropic](https://console.anthropic.com/)
+- Node.js 18 or higher
+- npm or yarn package manager
+- Groq API key ([Get free key here](https://console.groq.com))
 
 ### Installation
 
-1. Clone the repository:
 ```bash
-git clone https://github.com/Samee28/Tasks_Generator.git
-cd tasks-generator
-```
+# Clone repository
+git clone <your-repo-url>
+cd "Tasks Generator"
 
-2. Set up the backend:
-```bash
+# Install dependencies for both frontend and backend
+npm install
+
+# Configure environment
 cd backend
 cp .env.example .env.local
-# Add your CLAUDE_API_KEY to .env.local
-npm install
-```
+# Edit .env.local and add your Groq API key
 
-3. Set up the frontend:
-```bash
 cd ../frontend
 cp .env.example .env.local
-npm install
-```
+# For local development, leave VITE_API_URL empty
 
-### Running Locally
+# Start development servers
+cd ../backend
+npm run dev &
 
-**Terminal 1 - Backend (Next.js):**
-```bash
-cd backend
+cd ../frontend
 npm run dev
 ```
-Backend runs on: `http://localhost:3000`
 
-**Terminal 2 - Frontend (React + Vite):**
-```bash
-cd frontend
-npm run dev
-```
-Frontend runs on: `http://localhost:5173`
+Visit http://localhost:5173 to use the app!
 
-The frontend will proxy API requests to the backend automatically.
+## 📋 How to Use
 
-## Usage
+1. **Enter Project Details**
+   - Describe your goal (e.g., "Build a todo app")
+   - Specify target users (e.g., "Students")
+   - Add any constraints (e.g., "Simple UI, mobile-first")
 
-1. **Generate Tasks:**
-   - Fill in the Feature Goal, Target Users, and Constraints
-   - Optionally select a template for quick setup
+2. **Choose a Template** (Optional)
+   - Web Application
+   - Mobile Application  
+   - Internal Tool
+
+3. **Generate Tasks**
    - Click "Generate Tasks" button
-   - AI generates user stories and engineering tasks
+   - AI creates user stories and engineering tasks
+   - Tasks appear organized in collapsible sections
 
-2. **Manage Tasks:**
-   - **Edit**: Click the Edit button on any task to modify it
-   - **Delete**: Remove tasks you don't need
-   - **Reorder**: Drag and drop tasks within a group
-   - **Add**: Add custom tasks manually
+4. **Manage Tasks**
+   - Edit: Click pencil icon to modify any task
+   - Delete: Click trash icon to remove tasks
+   - Reorder: Drag and drop tasks to reorganize
 
-3. **Export:**
+5. **Export**
    - Choose Markdown or Text format
    - Copy to clipboard or download as file
-   - Share with team members
 
-4. **View History:**
-   - See last 5 generated specifications
-   - Click "Load This Spec" to restore previous work
+6. **View History**
+   - Access last 5 generations
+   - Click "Load" to restore previous tasks
 
-## Environment Variables
+## 🔧 Configuration
 
-### Backend (.env.local)
-```
-CLAUDE_API_KEY=your_api_key_here
-NEXT_PUBLIC_API_URL=http://localhost:3000
-```
+### Environment Variables
 
-### Frontend (.env.local)
-```
-VITE_API_URL=http://localhost:3000
+**Backend (.env.local)**
+```bash
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
-## API Endpoints
+**Frontend (.env.local)**
+```bash
+# Local development (uses Vite proxy)
+VITE_API_URL=
+
+# Production deployment
+VITE_API_URL=https://your-backend-url.vercel.app
+```
+
+### Getting Groq API Key
+
+1. Go to [console.groq.com](https://console.groq.com)
+2. Sign up for free account
+3. Navigate to API Keys section
+4. Create new API key
+5. Copy and paste into backend/.env.local
+
+## 📁 Project Structure
+
+```
+Tasks Generator/
+├── backend/                  # Next.js API backend
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── generate-tasks/   # POST - Generate tasks with AI
+│   │   │   └── specs/            # GET - Fetch history
+│   │   └── layout.tsx
+│   ├── lib/
+│   │   └── specs.ts          # Data persistence functions
+│   ├── data/
+│   │   └── specs.json        # Task history storage
+│   └── .env.local            # API keys (not in git)
+│
+├── frontend/                 # React + Vite frontend
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── TaskForm.jsx        # Input form
+│   │   │   ├── TaskList.jsx        # Task display & management
+│   │   │   ├── TaskCard.jsx        # Individual task component
+│   │   │   ├── ExportOptions.jsx   # Export functionality
+│   │   │   └── SpecHistory.jsx     # History viewer
+│   │   ├── App.jsx           # Main application
+│   │   └── main.jsx
+│   └── .env.local            # API URL (not in git)
+│
+├── .env.example              # Template files (in git)
+└── README.md                 # This file
+```
+
+## 🚢 Deployment
+
+### Vercel Deployment (Recommended)
+
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Initial commit"
+   git push origin main
+   ```
+
+2. **Deploy Backend**
+   - Go to [vercel.com](https://vercel.com)
+   - Import your GitHub repository
+   - Select `backend` folder as root directory
+   - Add environment variable: `GROQ_API_KEY`
+   - Deploy
+
+3. **Deploy Frontend**
+   - Import same repository again
+   - Select `frontend` folder as root directory
+   - Add environment variable: `VITE_API_URL` (your backend URL)
+   - Deploy
+
+### Environment Variables for Production
+
+**Backend:**
+- `GROQ_API_KEY`: Your Groq API key
+
+**Frontend:**
+- `VITE_API_URL`: Your backend deployment URL
+
+## 🔒 Security Notes
+
+- ✅ API keys stored in `.env.local` files (gitignored)
+- ✅ `.env.example` files provided as templates
+- ✅ No sensitive data in source code
+- ✅ CORS configured for production
+- ⚠️ Never commit `.env.local` files to git
+
+## 📡 API Endpoints
 
 ### POST /api/generate-tasks
-Generate user stories and engineering tasks from a feature spec.
+Generate tasks using AI.
 
 **Request:**
 ```json
 {
-  "goal": "Build a task management app",
-  "users": "Busy professionals",
-  "constraints": "Mobile-first, offline support"
+  "goal": "Build a todo app",
+  "users": "Students",
+  "constraints": "Simple UI"
 }
 ```
 
 **Response:**
 ```json
 {
-  "id": "1707707200000",
+  "id": "1234567890",
   "createdAt": "2024-02-12T10:00:00.000Z",
-  "goal": "...",
-  "users": "...",
-  "constraints": "...",
+  "goal": "Build a todo app",
+  "users": "Students",
+  "constraints": "Simple UI",
   "tasks": {
-    "userStories": [...],
-    "engineeringTasks": [...]
+    "userStories": [
+      {
+        "title": "User Can Create Todos",
+        "description": "As a student, I want to..."
+      }
+    ],
+    "engineeringTasks": [
+      {
+        "title": "Design Database Schema",
+        "description": "Create database tables..."
+      }
+    ]
   }
 }
 ```
 
 ### GET /api/specs
-Get summary of last 5 specifications.
+Get list of last 5 task generations (history).
 
 ### GET /api/specs/:id
-Get full details of a specific specification.
+Get full details of a specific task generation.
 
-## Code Quality
+## 🧪 Testing
 
-- ✅ Clean, modular component structure
-- ✅ Proper separation of frontend and backend
-- ✅ TypeScript for type safety (backend)
-- ✅ Environment variables properly managed
-- ✅ No API keys in source code
-- ✅ Error handling and validation
-
-## Deployment
-
-### Hosting Requirements
-
-**Frontend (Vercel recommended):**
 ```bash
-cd frontend
-npm run build
-# Deploy dist/ folder
+# Test backend API
+curl -X POST http://localhost:3000/api/generate-tasks \
+  -H "Content-Type: application/json" \
+  -d '{"goal":"Build a todo app","users":"Students","constraints":"Simple UI"}'
+
+# Test frontend
+open http://localhost:5173
 ```
 
-**Backend (Vercel, Netlify, or any Node.js host):**
-```bash
-cd backend
-npm run build
-npm start
-```
+## 🤝 Contributing
 
-### Environment Setup
-Set the following environment variables in your hosting platform:
-- `CLAUDE_API_KEY` - Your Claude API key
-- `NEXT_PUBLIC_API_URL` - URL to access the backend
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Contributing
+## 📄 License
 
-Feel free to fork and submit pull requests for any improvements.
+MIT License - see LICENSE file for details.
 
-## License
+## 🐛 Troubleshooting
 
-MIT
+**Issue: "API key not found" error**
+- Solution: Check that `GROQ_API_KEY` is set in `backend/.env.local`
+- Make sure there's a newline at the end of the file
+
+**Issue: Frontend can't connect to backend**
+- Solution: Check both servers are running
+- Backend should be on port 3000, frontend on port 5173
+- For production, set `VITE_API_URL` in frontend environment
+
+**Issue: Tasks not generating**
+- Check Groq API key is valid
+- Check backend terminal for error messages
+- Verify internet connection
+
+## 📞 Support
+
+For issues and questions:
+- Open an issue on GitHub
+- Check existing documentation in `/docs` folder
+
+---
+
+Built with ❤️ using Next.js, React, and Groq AI

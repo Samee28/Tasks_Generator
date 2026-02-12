@@ -1,372 +1,497 @@
-# Tasks Generator - Setup & Deployment Guide
+# Deployment Guide
 
-## 🚀 Quick Start
+Complete guide for deploying Tasks Generator to production.
 
-### Local Development
+## Table of Contents
 
-**Requirements:**
-- Node.js 18+
-- Claude API Key
+- [Overview](#overview)
+- [Pre-Deployment Checklist](#pre-deployment-checklist)
+- [Vercel Deployment (Recommended)](#vercel-deployment-recommended)
+- [Alternative Platforms](#alternative-platforms)
+- [Environment Configuration](#environment-configuration)
+- [Post-Deployment](#post-deployment)
+- [Troubleshooting](#troubleshooting)
 
-**Step 1: Clone and Setup Backend**
+## Overview
+
+Tasks Generator consists of two separate deployments:
+1. **Backend**: Next.js API (requires GROQ_API_KEY)
+2. **Frontend**: React SPA (requires VITE_API_URL pointing to backend)
+
+**Recommended Platform:** Vercel (free tier available, optimized for Next.js)
+
+## Pre-Deployment Checklist
+
+### Code Preparation
+
+- [ ] All features tested locally
+- [ ] No console errors in browser
+- [ ] API endpoints working correctly
+- [ ] Environment files configured (`.env.local`)
+- [ ] `.env.example` files present for both frontend/backend
+- [ ] No API keys in source code
+- [ ] `.gitignore` includes `.env.local` files
+
+### Repository Preparation
+
 ```bash
-cd backend
-cp .env.example .env.local
-# Add your CLAUDE_API_KEY to .env.local
-npm install
+# Verify .gitignore
+cat .gitignore
+# Should include:
+# backend/.env.local
+# frontend/.env.local
+# node_modules
+
+# Check no secrets in code
+grep -r "gsk_" --exclude-dir=node_modules --exclude="*.local"
+# Should return no results
+
+# Commit all changes
+git add .
+git commit -m "Prepare for deployment"
+git push origin main
 ```
 
-**Step 2: Setup Frontend**
+### API Key Ready
+
+- [ ] Valid Groq API key
+- [ ] Key tested and working
+- [ ] Key copied to clipboard for deployment
+
+## Vercel Deployment (Recommended)
+
+### Prerequisites
+
+- GitHub/GitLab/Bitbucket account
+- Vercel account ([vercel.com](https://vercel.com) - sign up free)
+- Repository pushed to Git provider
+
+### Step 1: Deploy Backend
+
+#### 1.1 Import Project
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Click **"Import Git Repository"**
+3. Select your `Tasks Generator` repository
+4. Click **"Import"**
+
+#### 1.2 Configure Backend
+
+**Root Directory:**
+```
+backend
+```
+
+**Framework Preset:**
+```
+Next.js
+```
+
+**Build Settings:**
+- Build Command: `npm run build` (auto-detected)
+- Output Directory: `.next` (auto-detected)
+- Install Command: `npm install` (auto-detected)
+
+#### 1.3 Add Environment Variables
+
+Click **"Environment Variables"** section:
+
+**Variable Name:**
+```
+GROQ_API_KEY
+```
+
+**Value:**
+```
+gsk_your_actual_groq_api_key_here
+```
+
+**Environment:** Select **All** (Production, Preview, Development)
+
+#### 1.4 Deploy
+
+1. Click **"Deploy"**
+2. Wait 1-2 minutes for build
+3. Note your backend URL (e.g., `https://tasks-generator-backend.vercel.app`)
+
+#### 1.5 Test Backend
+
 ```bash
-cd frontend
-npm install
+# Test API endpoint
+curl -X POST https://your-backend-url.vercel.app/api/generate-tasks \
+  -H "Content-Type: application/json" \
+  -d '{"goal":"Test deployment","users":"Users","constraints":"Production test"}'
 ```
 
-**Step 3: Run Both**
+Expected: JSON response with tasks
 
-Terminal 1:
+### Step 2: Deploy Frontend
+
+#### 2.1 Import Same Repository
+
+1. Go to [vercel.com/new](https://vercel.com/new) again
+2. Import the **same repository**
+3. This time, configure for frontend
+
+#### 2.2 Configure Frontend
+
+**Root Directory:**
+```
+frontend
+```
+
+**Framework Preset:**
+```
+Vite
+```
+
+**Build Settings:**
+- Build Command: `npm run build`
+- Output Directory: `dist`
+- Install Command: `npm install`
+
+#### 2.3 Add Environment Variables
+
+**Variable Name:**
+```
+VITE_API_URL
+```
+
+**Value:**
+```
+https://your-backend-url.vercel.app
+```
+(Use the backend URL from Step 1.4)
+
+**Environment:** Select **All**
+
+#### 2.4 Deploy
+
+1. Click **"Deploy"**
+2. Wait 1-2 minutes for build
+3. Note your frontend URL (e.g., `https://tasks-generator.vercel.app`)
+
+#### 2.5 Test Frontend
+
+1. Visit your frontend URL in browser
+2. Enter project details
+3. Click "Generate Tasks"
+4. Verify tasks are generated successfully
+
+### Step 3: Update README
+
+Update your README.md with live demo link:
+
+```markdown
+**Live Demo:** https://tasks-generator.vercel.app
+```
+
+Commit and push:
 ```bash
-cd backend
-npm run dev  # Runs on http://localhost:3000
+git add README.md
+git commit -m "Add live demo link"
+git push origin main
 ```
 
-Terminal 2:
-```bash
-cd frontend
-npm run dev  # Runs on http://localhost:5173
-```
+## Alternative Platforms
 
-Open browser: http://localhost:5173
-
----
-
-## 📦 Project Architecture
-
-### Backend (Next.js)
-- **Framework:** Next.js 15 with TypeScript
-- **API Route:** `/api/generate-tasks` - POST endpoint for AI task generation
-- **API Routes:** `/api/specs` - GET endpoints for spec history
-- **Persistence:** File-based JSON storage in `data/specs.json`
-- **Dependencies:** axios, dotenv
-
-### Frontend (React)
-- **Framework:** React 18
-- **Build Tool:** Vite
-- **Components:**
-  - `TaskForm` - Input form with templates
-  - `TaskList` - Editable, draggable task lists
-  - `TaskCard` - Individual task cards
-  - `ExportOptions` - Export to markdown/text
-  - `SpecHistory` - View and load previous specs
-
----
-
-## 🔧 API Reference
-
-### POST /api/generate-tasks
-Generates user stories and engineering tasks from a feature specification.
-
-**Request Body:**
-```json
-{
-  "goal": "Build a mobile shopping app",
-  "users": "Online shoppers aged 18-45",
-  "constraints": "iOS & Android, offline support, < 5MB"
-}
-```
-
-**Response:**
-```json
-{
-  "id": "1707707200000",
-  "createdAt": "2024-02-12T10:30:00Z",
-  "goal": "Build a mobile shopping app",
-  "users": "Online shoppers aged 18-45",
-  "constraints": "iOS & Android, offline support, < 5MB",
-  "tasks": {
-    "userStories": [
-      {
-        "title": "User Story Title",
-        "description": "Description of what the user can do"
-      }
-    ],
-    "engineeringTasks": [
-      {
-        "title": "Engineering Task Title",
-        "description": "Technical implementation details"
-      }
-    ]
-  }
-}
-```
-
-### GET /api/specs
-Returns a summary of the last 5 generated specifications.
-
-**Response:**
-```json
-[
-  {
-    "id": "1707707200000",
-    "createdAt": "2024-02-12T10:30:00Z",
-    "goal": "Build a mobile shopping app",
-    "users": "Online shoppers aged 18-45",
-    "constraints": "iOS & Android, offline support, < 5MB"
-  }
-]
-```
-
-### GET /api/specs/:id
-Returns the full specification including tasks.
-
-**Response:**
-```json
-{
-  "id": "1707707200000",
-  "createdAt": "2024-02-12T10:30:00Z",
-  "goal": "Build a mobile shopping app",
-  "users": "Online shoppers aged 18-45",
-  "constraints": "iOS & Android, offline support, < 5MB",
-  "tasks": { ... }
-}
-```
-
----
-
-## 🌐 Deployment Guide
-
-### Option 1: Deploy on Vercel (Recommended)
-
-**Backend (Next.js):**
-1. Go to [vercel.com](https://vercel.com)
-2. Click "New Project"
-3. Select the backend folder
-4. Add environment variable: `CLAUDE_API_KEY`
-5. Deploy
-
-**Frontend (React/Vite):**
-1. Create new Vercel project
-2. Select the frontend folder
-3. Add environment variable: `VITE_API_URL=https://your-backend-url.vercel.app`
-4. Deploy
-
-**Update Frontend:**
-After backend deployment, update `VITE_API_URL` in frontend environment variables.
-
-### Option 2: Deploy on Railway
+### Netlify
 
 **Backend:**
-```bash
-# In backend directory
-npm install -g railway
-railway login
-railway init
-railway link
-railway up
-```
-
-Set environment variables in Railway dashboard:
-- `CLAUDE_API_KEY`
-- `NODE_ENV=production`
+- Not recommended (Netlify functions have different structure)
+- Consider using Vercel for backend
 
 **Frontend:**
+1. Connect GitHub repository
+2. Build command: `npm run build`
+3. Publish directory: `frontend/dist`
+4. Environment: `VITE_API_URL=<your-backend-url>`
+
+### Railway
+
+**Backend:**
+1. Connect repository
+2. Root directory: `backend`
+3. Environment: `GROQ_API_KEY`
+4. Custom start command: `npm run start`
+
+**Frontend:**
+- Not ideal for static sites
+- Use Vercel/Netlify for frontend
+
+### Render
+
+**Backend (Web Service):**
+1. Connect repository
+2. Root directory: `backend`
+3. Build: `npm install && npm run build`
+4. Start: `npm run start`
+5. Environment: `GROQ_API_KEY`
+
+**Frontend (Static Site):**
+1. Connect repository
+2. Root directory: `frontend`
+3. Build: `npm install && npm run build`
+4. Publish: `dist`
+5. Environment: `VITE_API_URL`
+
+## Environment Configuration
+
+### Backend Environment Variables
+
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `GROQ_API_KEY` | Yes | Groq API authentication | `gsk_xxx...` |
+
+### Frontend Environment Variables
+
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `VITE_API_URL` | Yes | Backend API URL | `https://api.example.com` |
+
+### Security Best Practices
+
+✅ **DO:**
+- Use environment variables for all secrets
+- Set different keys for production/staging
+- Rotate API keys regularly
+- Use `.env.example` as template
+- Keep `.env.local` in `.gitignore`
+
+❌ **DON'T:**
+- Commit API keys to git
+- Hardcode secrets in code
+- Share API keys publicly
+- Use development keys in production
+- Expose keys in client-side code
+
+## Post-Deployment
+
+### Verify Functionality
+
+1. **Test Task Generation**
+   - Enter project details
+   - Generate tasks
+   - Verify AI response
+
+2. **Test Task Management**
+   - Edit tasks
+   - Delete tasks
+   - Reorder with drag-and-drop
+
+3. **Test Export**
+   - Export as Markdown
+   - Export as Text
+   - Copy to clipboard
+
+4. **Test History**
+   - Generate multiple tasks
+   - View history tab
+   - Load previous specifications
+
+### Monitor Performance
+
+**Vercel Dashboard:**
+- Check deployment logs
+- Monitor function invocations
+- Track bandwidth usage
+- Review error logs
+
+**Groq Console:**
+- Monitor API usage
+- Check rate limits
+- Review request logs
+- Track costs (if on paid plan)
+
+### Set Up Custom Domain (Optional)
+
+**Vercel:**
+1. Go to project settings
+2. Navigate to "Domains"
+3. Add your domain
+4. Update DNS records (provided by Vercel)
+5. Wait for DNS propagation (5-30 minutes)
+
+### Enable Analytics (Optional)
+
+**Vercel Analytics:**
 ```bash
-# In frontend directory
-npm run build
-# Upload dist/ folder to Railway, Netlify, or Vercel
+cd frontend
+npm install @vercel/analytics
 ```
 
-### Option 3: Docker Deployment
-
-**Create docker-compose.yml:**
-```yaml
-version: '3.8'
-
-services:
-  backend:
-    build: ./backend
-    ports:
-      - "3000:3000"
-    environment:
-      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
-      - NODE_ENV=production
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-    ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://backend:3000
-    depends_on:
-      - backend
+Update `frontend/src/main.jsx`:
+```javascript
+import { inject } from '@vercel/analytics';
+inject();
 ```
 
-Deploy:
+## Troubleshooting
+
+### Backend Issues
+
+#### "API Key Invalid"
+- Verify `GROQ_API_KEY` in Vercel environment variables
+- Check key is active in Groq Console
+- Redeploy after updating environment variables
+
+#### "Function Timeout"
+- Groq API might be slow
+- Check Vercel function logs
+- Consider increasing timeout (Pro plan)
+
+#### "Build Failed"
 ```bash
-docker-compose up -d
+# Check logs in Vercel dashboard
+# Common fixes:
+- Verify package.json is correct
+- Check Node.js version compatibility
+- Review build logs for specific errors
 ```
 
----
+### Frontend Issues
 
-## 🔑 Environment Variables
+#### "Cannot Connect to API"
+- Verify `VITE_API_URL` is set correctly
+- Must include `https://` prefix
+- Should not have trailing slash
+- Check backend is deployed and working
 
-### Backend (.env.local or .env.production)
-```
-CLAUDE_API_KEY=sk-ant-v1-xxxxxxxxxxxxxxxx
-NODE_ENV=production
-NEXT_PUBLIC_API_URL=https://your-domain.com
-```
+#### "CORS Errors"
+Backend should automatically handle CORS, but if issues persist:
 
-### Frontend (.env.local or .env.production)
-```
-VITE_API_URL=https://your-backend-url.com
-```
-
----
-
-## 📝 Key Features Implementation
-
-### 1. Task Generation with Claude API
-- Uses Claude 3.5 Sonnet model
-- Sends structured prompt to generate user stories and engineering tasks
-- Parses JSON response and saves to history
-
-### 2. Data Persistence
-- Specs stored in `backend/data/specs.json`
-- Keeps last 5 generated specifications
-- Auto-creates data directory on first request
-
-### 3. Frontend State Management
-- React hooks for state management
-- Drag-and-drop using HTML5 API
-- Local component state for editing
-
-### 4. Export Functionality
-- Generate Markdown format with structure
-- Generate plain text format
-- Copy to clipboard
-- Download as file
-
----
-
-## 🧪 Testing
-
-### Local Testing Checklist
-- [ ] Backend starts without errors
-- [ ] Frontend connects to backend
-- [ ] Form submission generates tasks
-- [ ] Can edit tasks
-- [ ] Can drag and reorder tasks
-- [ ] Can delete tasks
-- [ ] Export to markdown works
-- [ ] Export to text works
-- [ ] History shows last 5 specs
-- [ ] Can load previous specs
-
-### Example Test Flow
-1. Fill form with:
-   - Goal: "Build a note-taking app"
-   - Users: "Students and professionals"
-   - Constraints: "Web-based, real-time sync, free tier"
-2. Click "Generate Tasks"
-3. Verify tasks appear
-4. Edit a task
-5. Drag task to reorder
-6. Export as markdown
-7. Check History tab
-
----
-
-## 📊 File Storage Structure
-
-```
-backend/
-└── data/
-    └── specs.json
+Update `backend/next.config.js`:
+```javascript
+module.exports = {
+  async headers() {
+    return [
+      {
+        source: '/api/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: 'https://your-frontend.vercel.app' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET,POST,OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'Content-Type' },
+        ],
+      },
+    ];
+  },
+};
 ```
 
-**specs.json format:**
-```json
-[
-  {
-    "id": "1707707200000",
-    "createdAt": "2024-02-12T10:30:00Z",
-    "goal": "...",
-    "users": "...",
-    "constraints": "...",
-    "tasks": {
-      "userStories": [...],
-      "engineeringTasks": [...]
-    }
-  }
-]
-```
+#### "Environment Variable Not Found"
+- Vercel requires `VITE_` prefix for client-side variables
+- Redeploy after adding/updating environment variables
+- Check variable is set in correct environment (Production/Preview/Development)
 
----
+### General Issues
 
-## 🐛 Troubleshooting
+#### "Too Many Requests"
+- Groq free tier: 30 requests/minute
+- Add rate limiting on backend
+- Consider caching responses
+- Upgrade Groq plan if needed
 
-### Backend won't start
+#### "Slow Performance"
+- Enable Vercel Edge Functions
+- Implement response caching
+- Optimize bundle size
+- Use production builds
+
+## Deployment Costs
+
+### Free Tier Limits
+
+**Vercel (Free):**
+- 100 GB bandwidth/month
+- Unlimited deployments
+- Unlimited previews
+- Commercial use allowed
+
+**Groq (Free):**
+- 14,400 requests/day
+- 30 requests/minute
+- Should be sufficient for small to medium projects
+
+### Scaling Considerations
+
+**When to Upgrade:**
+- More than 14,000 API calls/day
+- Need faster rate limits
+- Require custom timeouts
+- Want custom domains
+
+## Maintenance
+
+### Regular Tasks
+
+**Weekly:**
+- Check error logs
+- Monitor API usage
+- Review performance metrics
+
+**Monthly:**
+- Update dependencies
+- Review security advisories
+- Rotate API keys
+- Check Groq/Vercel usage
+
+**As Needed:**
+- Redeploy after code changes
+- Update environment variables
+- Scale resources if needed
+
+### Updates and Patches
+
 ```bash
-# Clear .next cache
-rm -rf backend/.next
+# Update dependencies
+npm update
 
-# Reinstall dependencies
-rm -rf backend/node_modules
-npm install
+# Check for security issues
+npm audit
+npm audit fix
+
+# Test locally
+npm run dev
+
+# Commit and push (triggers auto-deploy on Vercel)
+git add .
+git commit -m "Update dependencies"
+git push origin main
 ```
 
-### CORS errors
-- Check that frontend URL is correct
-- Ensure backend is running on correct port
-- Frontend vite.config.js has proxy setup
+## Support Resources
 
-### API key not working
-- Verify `CLAUDE_API_KEY` is set correctly
-- Check Anthropic dashboard for API key validity
-- Ensure key has required permissions
+- **Vercel Docs**: [vercel.com/docs](https://vercel.com/docs)
+- **Groq API Docs**: [console.groq.com/docs](https://console.groq.com/docs)
+- **Next.js Deployment**: [nextjs.org/docs/deployment](https://nextjs.org/docs/deployment)
+- **Vite Deployment**: [vitejs.dev/guide/static-deploy](https://vitejs.dev/guide/static-deploy)
 
-### Tasks not saving
-- Check `backend/data/` directory exists
-- Verify write permissions
-- Check backend console for errors
+## Quick Reference
 
----
+### Redeploy Backend
+```bash
+git add backend/
+git commit -m "Update backend"
+git push origin main
+# Vercel auto-deploys
+```
 
-## 🎯 Production Checklist
+### Redeploy Frontend
+```bash
+git add frontend/
+git commit -m "Update frontend"
+git push origin main
+# Vercel auto-deploys
+```
 
-- [ ] Environment variables set in production
-- [ ] CLAUDE_API_KEY is secure and not in code
-- [ ] Frontend build optimized (`npm run build`)
-- [ ] Error handling tested
-- [ ] CORS properly configured
-- [ ] Database (data/) has proper permissions
-- [ ] Monitoring/logging set up
-- [ ] HTTPS enabled
-- [ ] Rate limiting considered
-- [ ] Backup strategy for specs.json
+### Update Environment Variable
+1. Go to Vercel project settings
+2. Click "Environment Variables"
+3. Edit variable
+4. Trigger manual redeploy or push code change
 
----
-
-## 📚 Additional Resources
-
-- [Claude API Docs](https://docs.anthropic.com/)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [React Documentation](https://react.dev)
-- [Vite Documentation](https://vitejs.dev)
-
----
-
-## 💡 Future Enhancements
-
-- User authentication
-- Database integration (PostgreSQL/MongoDB)
-- Real-time collaboration
-- Advanced templates
-- Risk/unknowns section
-- Task dependencies
-- Gantt chart visualization
-- API rate limiting
-- Analytics dashboard
+### Rollback Deployment
+1. Go to Vercel dashboard
+2. Click "Deployments"
+3. Find previous successful deployment
+4. Click three dots → "Promote to Production"

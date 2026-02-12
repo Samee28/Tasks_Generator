@@ -5,7 +5,8 @@ import TaskList from './components/TaskList';
 import SpecHistory from './components/SpecHistory';
 import ExportOptions from './components/ExportOptions';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const envApiUrl = import.meta.env.VITE_API_URL;
+const API_URL = envApiUrl && envApiUrl !== 'http://localhost:3000' ? envApiUrl : '';
 
 export default function App() {
   const [tasks, setTasks] = useState({ userStories: [], engineeringTasks: [] });
@@ -44,11 +45,11 @@ export default function App() {
         body: JSON.stringify(formData)
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate tasks');
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || 'Failed to generate tasks');
+      }
       setTasks(data.tasks);
       setActiveTab('tasks');
       await fetchSpecs();
