@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   /* config options here */
   turbopack: {
-    root: __dirname,
+    root: path.resolve(process.cwd()),
   },
 };
 
