@@ -1,140 +1,209 @@
+'use client';
+
+import { useState } from 'react';
+import TaskForm from './components/TaskForm';
+import TaskList from './components/TaskList';
+import ExportOptions from './components/ExportOptions';
+import SpecHistory from './components/SpecHistory';
+
+interface Task {
+  title: string;
+  description: string;
+}
+
+interface SpecData {
+  goal: string;
+  users: string;
+  constraints: string;
+  risks?: string;
+  userStories: Task[];
+  engineeringTasks: Task[];
+}
+
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentSpec, setCurrentSpec] = useState<SpecData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGenerate = async (formData: { goal: string; users: string; constraints: string; risks?: string }) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/generate-tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate tasks');
+      }
+
+      const data = await response.json();
+      setCurrentSpec({
+        goal: data.goal,
+        users: data.users,
+        constraints: data.constraints,
+        risks: data.risks,
+        userStories: data.tasks.userStories || [],
+        engineeringTasks: data.tasks.engineeringTasks || [],
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLoadSpec = async (id: string) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/specs/${id}`);
+      if (!response.ok) {
+        throw new Error('Failed to load specification');
+      }
+
+      const data = await response.json();
+      setCurrentSpec({
+        goal: data.goal,
+        users: data.users,
+        constraints: data.constraints,
+        risks: data.risks,
+        userStories: data.tasks.userStories || [],
+        engineeringTasks: data.tasks.engineeringTasks || [],
+      });
+      
+      // Scroll to top to see loaded spec
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTasksUpdate = (userStories: Task[], engineeringTasks: Task[]) => {
+    if (currentSpec) {
+      setCurrentSpec({
+        ...currentSpec,
+        userStories,
+        engineeringTasks,
+      });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              🚀 Tasks Generator API
+          <div className="text-center mb-8">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+              🚀 Tasks Generator
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-2">
               AI-powered task breakdown using Groq's Llama 3.3 70B model
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Generate user stories and engineering tasks from your feature ideas
             </p>
           </div>
 
-          {/* Status Badge */}
-          <div className="flex justify-center mb-8">
-            <span className="inline-flex items-center px-4 py-2 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-              API Online
-            </span>
+            </p>
           </div>
 
-          {/* API Endpoints */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              📡 Available Endpoints
-            </h2>
-            
-            <div className="space-y-6">
-              {/* POST /api/generate-tasks */}
-              <div className="border-l-4 border-blue-500 pl-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-sm font-mono rounded">
-                    POST
-                  </span>
-                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
-                    /api/generate-tasks
-                  </code>
-                </div>
-                <p className="text-gray-600 dark:text-gray-400 mb-3">
-                  Generate user stories and engineering tasks from project description
-                </p>
-                <details className="bg-gray-50 dark:bg-gray-700 p-4 rounded">
-                  <summary className="cursor-pointer font-semibold text-gray-700 dark:text-gray-300">
-                    Example Request
-                  </summary>
-                  <pre className="mt-3 text-xs overflow-x-auto">
-{`curl -X POST http://localhost:3000/api/generate-tasks \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "goal": "Build a todo app",
-    "users": "Students",
-    "constraints": "Simple UI"
-  }'`}
-                  </pre>
-                </details>
-              </div>
-
-              {/* GET /api/specs */}
-              <div className="border-l-4 border-green-500 pl-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-sm font-mono rounded">
-                    GET
-                  </span>
-                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
-                    /api/specs
-                  </code>
-                </div>
-                <p className="text-gray-600 dark:text-gray-400 mb-3">
-                  Get list of last 5 task generations (history)
-                </p>
-                <a 
-                  href="/api/specs"
-                  className="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
-                >
-                  Try it now →
-                </a>
-              </div>
-
-              {/* GET /api/specs/:id */}
-              <div className="border-l-4 border-purple-500 pl-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-1 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-sm font-mono rounded">
-                    GET
-                  </span>
-                  <code className="text-sm font-mono text-gray-900 dark:text-gray-100">
-                    /api/specs/:id
-                  </code>
-                </div>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Get full details of a specific task generation
-                </p>
-              </div>
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-lg">
+              <p className="font-semibold">Error:</p>
+              <p>{error}</p>
             </div>
+          )}
+
+          {/* Main Content */}
+          <div className="space-y-6">
+            {/* Task Form */}
+            <TaskForm onGenerate={handleGenerate} isLoading={isLoading} />
+
+            {/* Current Results */}
+            {currentSpec && (
+              <>
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    📊 Current Specification
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Goal</p>
+                      <p className="text-gray-900 dark:text-white">{currentSpec.goal}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Target Users</p>
+                      <p className="text-gray-900 dark:text-white">{currentSpec.users}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Constraints</p>
+                      <p className="text-gray-900 dark:text-white">{currentSpec.constraints}</p>
+                    </div>
+                    {currentSpec.risks && (
+                      <div>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Risks/Unknowns</p>
+                        <p className="text-gray-900 dark:text-white">{currentSpec.risks}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-4 text-center pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex-1">
+                      <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                        {currentSpec.userStories.length}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">User Stories</p>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                        {currentSpec.engineeringTasks.length}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Engineering Tasks</p>
+                    </div>
+                  </div>
+                </div>
+
+                <TaskList
+                  userStories={currentSpec.userStories}
+                  engineeringTasks={currentSpec.engineeringTasks}
+                  onTasksUpdate={handleTasksUpdate}
+                />
+
+                <ExportOptions
+                  goal={currentSpec.goal}
+                  users={currentSpec.users}
+                  constraints={currentSpec.constraints}
+                  risks={currentSpec.risks}
+                  userStories={currentSpec.userStories}
+                  engineeringTasks={currentSpec.engineeringTasks}
+                />
+              </>
+            )}
+
+            {/* History */}
+            <SpecHistory onLoad={handleLoadSpec} />
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                ~1-2s
-              </div>
-              <div className="text-gray-600 dark:text-gray-400">
-                Response Time
-              </div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
-                5-7
-              </div>
-              <div className="text-gray-600 dark:text-gray-400">
-                User Stories
-              </div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
-              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-                5-8
-              </div>
-              <div className="text-gray-600 dark:text-gray-400">
-                Engineering Tasks
-              </div>
-            </div>
-          </div>
-
-          {/* Links */}
-          <div className="text-center">
+          {/* Footer */}
+          <div className="mt-12 text-center text-gray-500 dark:text-gray-400">
+            <p className="mb-2">
+              Built with Next.js, React, Tailwind CSS, and Groq AI
+            </p>
             <a
               href="https://github.com/Samee28/Tasks_Generator"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition"
+              className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-              </svg>
-              View on GitHub
+              View on GitHub →
             </a>
           </div>
         </div>

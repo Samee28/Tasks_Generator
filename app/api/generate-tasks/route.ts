@@ -3,7 +3,7 @@ import { loadSpecs, saveSpecs } from '@/lib/specs';
 
 export async function POST(request: NextRequest) {
   try {
-    const { goal, users, constraints } = await request.json();
+    const { goal, users, constraints, risks } = await request.json();
 
     if (!goal || !users || !constraints) {
       return NextResponse.json(
@@ -20,12 +20,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const risksSection = risks ? `\nRisks/Unknowns: ${risks}` : '';
     const prompt = `You are a product manager and engineering lead. Based on the following feature idea, generate a comprehensive list of user stories and engineering tasks. Return the result as a JSON object with two arrays: "userStories" and "engineeringTasks". Each item should have a "title" and "description" field.
 
 Feature Idea:
 Goal: ${goal}
 Users: ${users}
-Constraints: ${constraints}
+Constraints: ${constraints}${risksSection}
 
 Return ONLY valid JSON, no markdown formatting or code blocks.`;
 
@@ -84,6 +85,7 @@ Return ONLY valid JSON, no markdown formatting or code blocks.`;
       goal,
       users,
       constraints,
+      ...(risks && { risks }),
       tasks
     };
 
@@ -91,7 +93,7 @@ Return ONLY valid JSON, no markdown formatting or code blocks.`;
     specs.splice(5); // Keep only last 5
     saveSpecs(specs);
 
-    return NextResponse.json({ ...newSpec, tasks });
+    return NextResponse.json(newSpec);
   } catch (error: any) {
     console.error('Error:', error.message);
     return NextResponse.json(

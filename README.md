@@ -1,29 +1,47 @@
 # Tasks Generator 🚀
 
-> AI-powered task breakdown API that transforms project ideas into actionable user stories and engineering tasks using Groq AI.
+> AI-powered web application that transforms project ideas into actionable user stories and engineering tasks using Groq AI.
 
 ## 🎯 Overview
 
-Tasks Generator is a **Next.js API backend** that uses **Groq's Llama 3.3 70B model** to automatically generate structured task breakdowns from simple project descriptions. Perfect for project planning, sprint preparation, and requirement analysis.
+Tasks Generator is a **full-stack Next.js application** with an interactive UI that uses **Groq's Llama 3.3 70B model** to automatically generate structured task breakdowns from simple project descriptions. Perfect for project planning, sprint preparation, and requirement analysis.
 
 **Repository:** [github.com/Samee28/Tasks_Generator](https://github.com/Samee28/Tasks_Generator)
 
 ## ✨ Key Features
 
-- **🤖 AI-Powered Generation**: Leverages Groq's llama-3.3-70b-versatile model for intelligent task creation
-- **📝 Structured Output**: Generates both user stories and engineering tasks
-- **💾 Automatic History**: Saves last 5 task generations to file-based storage
+### Core Functionality
+- **📝 Interactive Form**: Fill in goal, target users, constraints, and risks/unknowns
+- **✨ Smart Templates**: Pre-built templates for Web Apps, Mobile Apps, and Internal Tools
+- **🤖 AI-Powered Generation**: Leverages Groq's llama-3.3-70b-versatile model (70B parameters)
+- **📊 Structured Output**: Generates user stories and engineering tasks with descriptions
+
+### Task Management
+- **✏️ Edit Tasks**: Click to edit any task title or description inline
+- **🗑️ Delete Tasks**: Remove unwanted tasks with one click
+- **🔄 Drag & Drop**: Reorder tasks by dragging them to new positions
+- **📦 Collapsible Groups**: Collapse/expand user stories and engineering tasks sections
+
+### Export & History
+- **📥 Multiple Export Formats**: Download or copy as Markdown (.md) or Plain Text (.txt)
+- **📋 Copy to Clipboard**: One-click copy in either format
+- **📜 History Viewer**: Access your last 5 generated specifications
+- **🔄 Reload Specs**: Load any previous specification to view or edit
+
+### Additional Features
+- **⚠️ Risk Assessment**: Optional field for documenting risks and unknowns
+- **🎨 Professional UI**: Modern gradient design with dark mode support
 - **⚡ Fast Performance**: Next.js 16 with Turbopack for rapid development
 - **🔒 Secure**: API keys managed through environment variables
-- **📊 RESTful API**: Clean, well-documented endpoints
 
 ## 🛠️ Technology Stack
 
-- **Next.js 16.1.6** - App Router with TypeScript
-- **TypeScript 5** - Strict mode for type safety
+- **Next.js 16.1.6** - Full-stack React framework with App Router
+- **React 19** - UI components with hooks
+- **TypeScript 5** - Type-safe development
+- **Tailwind CSS 4** - Modern styling with gradients and animations
 - **Groq API** - llama-3.3-70b-versatile model (70B parameters)
 - **File-based Storage** - JSON persistence in `/data` folder
-- **Node.js 18+** - Runtime environment
 
 ## 🚀 Quick Start
 
@@ -53,33 +71,78 @@ cp .env.example .env.local
 npm run dev
 ```
 
-**Server runs at:** `http://localhost:3000`
+**Application runs at:** `http://localhost:3000`
 
-### Verify Installation
+Open your browser and visit the app to start generating tasks!
 
-```bash
-# Test specs endpoint (should return empty array initially)
-curl http://localhost:3000/api/specs
+## 📋 How to Use the Web App
 
-# Test task generation
-curl -X POST http://localhost:3000/api/generate-tasks \
-  -H "Content-Type: application/json" \
-  -d '{"goal":"Build a todo app","users":"Students","constraints":"Simple UI"}'
-```
+### 1. Fill in the Form
 
-## 📋 How to Use
+1. **Enter Goal**: Describe your feature or project (e.g., "Build a todo app with real-time collaboration")
+2. **Target Users**: Who will use this? (e.g., "Students, Teachers, Project managers")
+3. **Constraints**: Any requirements or limits (e.g., "Mobile-first design, Must work offline")
+4. **Risks/Unknowns** *(Optional)*: Document concerns (e.g., "Third-party API reliability")
 
-### 1. Generate Tasks
+**Or use a Template:**
+- Click "✨ Use Template" to quick-fill with pre-made examples
+- Choose from Web Application, Mobile Application, or Internal Tool templates
 
-Send a POST request with your project details:
+### 2. Generate Tasks
 
-```bash
-curl -X POST http://localhost:3000/api/generate-tasks \
-  -H "Content-Type: application/json" \
-  -d '{
-    "goal": "E-commerce website",
-    "users": "Online shoppers",
-    "constraints": "Secure payment gateway"
+- Click "🚀 Generate Tasks" button
+- AI will process your input (~1-2 seconds)
+- Tasks appear organized in two sections:
+  - 📖 **User Stories**: Customer-focused features
+  - ⚙️ **Engineering Tasks**: Technical implementation steps
+
+### 3. Manage Your Tasks
+
+**Edit Tasks:**
+- Click the ✏️ icon on any task
+- Modify title and description
+- Click "✓ Save" to confirm changes
+
+**Delete Tasks:**
+- Click the 🗑️ icon to remove a task
+- Changes are immediate
+
+**Reorder Tasks:**
+- Drag any task card to a new position
+- Drop it where you want it in the list
+- Works within each section (User Stories or Engineering Tasks)
+
+**Collapse Sections:**
+- Click section headers to show/hide tasks
+- Useful when focusing on specific areas
+
+### 4. Export Results
+
+Click "📥 Export Results" to expand options:
+
+**Markdown Format** (.md):
+- Click "📋 Copy" to copy to clipboard
+- Click "⬇️ Download .md" to save as file
+- Perfect for documentation, GitHub, Notion
+
+**Plain Text Format** (.txt):
+- Click "📋 Copy" to copy to clipboard
+- Click "⬇️ Download .txt" to save as file
+- Great for emails, notes, simple sharing
+
+**Preview:**
+- Click "👁️ Preview Markdown" to see formatted output before exporting
+
+### 5. View History
+
+- Click "📜 View History (Last 5)" to see previous generations
+- Each entry shows: date, goal, users, constraints, and risks
+- Click "📂 Load This Spec" to restore any previous specification
+- Loaded specs can be edited and re-exported
+
+## 🔌 API Endpoints (for developers)
+
+The app also exposes REST API endpoints:
   }'
 ```
 
@@ -557,9 +620,7 @@ You are free to:
 
 ## 📞 Support
 
-### Get Help
 
-- 📧 **Email**: Open an issue on GitHub
 - 💬 **Issues**: [github.com/Samee28/Tasks_Generator/issues](https://github.com/Samee28/Tasks_Generator/issues)
 - 📖 **Documentation**: Check `/docs` folder for guides
 
